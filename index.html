@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earthquake Activity Tracker</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%234c6ef5'/%3E%3Cstop offset='1' stop-color='%232965d8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='30' fill='url(%23g)'/%3E%3Cpath d='M14 28c8 2 10-6 18-5s8 6 14 6c4 0 7-2 10-4-1 9-7 19-18 23-12 5-25-1-31-12 3 0 6-4 7-8z' fill='%23a7f3d0'/%3E%3C/svg%3E"
+    >
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-content">
+        <div class="branding">
+          <span class="logo" aria-hidden="true">🌍</span>
+          <div>
+            <h1>Earthquake Activity Tracker</h1>
+            <p class="tagline">Live seismic insights from the USGS. Track quakes, spot trends, and stay prepared.</p>
+          </div>
+        </div>
+        <button id="theme-toggle" class="ghost-button" type="button" aria-label="Toggle dark theme">
+          Switch to Dark Mode
+        </button>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="card controls-card" aria-label="Earthquake filters">
+        <form id="control-form" class="controls">
+          <fieldset class="control-tile time-range-group">
+            <legend>Time window</legend>
+            <label>
+              <input type="radio" name="timeRange" value="hour" checked>
+              Past hour
+            </label>
+            <label>
+              <input type="radio" name="timeRange" value="day">
+              Past day
+            </label>
+            <label>
+              <input type="radio" name="timeRange" value="week">
+              Past week
+            </label>
+          </fieldset>
+
+          <div class="control-tile magnitude-tile">
+            <div class="tile-header">
+              <label class="tile-title" for="magnitude-slider">Minimum magnitude</label>
+              <output id="magnitude-value" for="magnitude-slider">0.0</output>
+            </div>
+            <input id="magnitude-slider" class="tile-slider" type="range" min="0" max="7" step="0.5" value="0">
+          </div>
+
+          <div class="control-tile select-tile">
+            <label class="tile-title" for="sort-select">Sort by</label>
+            <select id="sort-select" name="sort">
+              <option value="timeDesc" selected>Most recent</option>
+              <option value="timeAsc">Oldest first</option>
+              <option value="magDesc">Magnitude (high → low)</option>
+              <option value="magAsc">Magnitude (low → high)</option>
+            </select>
+          </div>
+
+          <div class="control-tile toggles">
+            <span class="tile-title">Options</span>
+            <label class="toggle-item">
+              <input type="checkbox" id="show-aftershocks">
+              Highlight aftershocks (M &lt; 3.5)
+            </label>
+            <label class="toggle-item">
+              <input type="checkbox" id="auto-refresh" checked>
+              Auto-refresh every 1 minute
+            </label>
+          </div>
+        </form>
+        <div id="error-message" class="error-message" role="alert" aria-live="assertive"></div>
+      </section>
+
+      <section class="insights-grid" aria-label="Earthquake summary insights">
+        <article class="card metric-card">
+          <h2>Total quakes</h2>
+          <p id="total-quakes" class="metric-value">—</p>
+          <p class="metric-detail">Detected in selected window.</p>
+        </article>
+        <article class="card metric-card">
+          <h2>Strongest quake</h2>
+          <p id="strongest-quake" class="metric-value">—</p>
+          <p class="metric-detail" id="strongest-location">Awaiting data.</p>
+        </article>
+        <article class="card metric-card">
+          <h2>Average depth</h2>
+          <p id="average-depth" class="metric-value">—</p>
+          <p class="metric-detail">Depth below the surface (km).</p>
+        </article>
+      </section>
+
+      <section class="layout-grid">
+        <article class="card map-card">
+          <header class="card-header">
+            <h2>Live map</h2>
+            <p class="hint">Click a marker to see quake details.</p>
+          </header>
+          <div id="map" role="region" aria-label="Earthquake locations map"></div>
+        </article>
+
+        <aside class="card list-card" aria-live="polite">
+          <header class="card-header">
+            <h2>Recent earthquakes</h2>
+            <p class="hint">Hover or tap to highlight on the map.</p>
+          </header>
+          <div id="quake-list" class="quake-list"></div>
+        </aside>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        Data sourced from the
+        <a href="https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php" target="_blank" rel="noopener">
+          USGS Earthquake Hazards Program
+        </a>.
+      </p>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="app.js" type="module"></script>
+  </body>
+</html>
